@@ -1,1 +1,17 @@
 __pycache__
+*$py.class
+*.egg
+*.lock
+*.log
+*.py[cod]
+*.swp
+*.tar
+*~
+.DS_Store
+._*
+.idea
+.virtualenv
+.vscode
+venv/
+/tags
+core

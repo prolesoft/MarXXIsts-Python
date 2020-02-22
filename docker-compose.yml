@@ -1,0 +1,36 @@
+version: '3.1'
+services:
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: local
+    networks:
+      - marxxists
+
+  flask:
+    build: .
+    ports:
+      - "5000:5000"
+    command: flask run
+    networks:
+      - entropic
+    environment:
+      SQLALCHEMY_DATABASE_URI: postgres://postgres:local@db:5432/marxxists
+      FLASK_ENV: development
+      FLASK_APP: app.py
+      FLASK_RUN_HOST: 0.0.0.0
+    networks:
+      - marxxists
+    volumes:
+      - .:/marxxists:cached
+
+volumes:
+  postgres_data:
+
+networks:
+  marxxists:
