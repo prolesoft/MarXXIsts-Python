@@ -1,3 +1,4 @@
+from os import path
 from flask import Flask, escape, request, render_template, redirect, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -5,8 +6,12 @@ from flask_wtf import FlaskForm
 from werkzeug.urls import url_parse
 from flask_login import current_user, login_user, LoginManager, logout_user
 
+
 app = Flask(__name__)
-app.config.from_pyfile('config.cfg')
+
+if path.isfile('config.cfg'):
+    app.config.from_pyfile('config.cfg')
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager(app)
@@ -14,6 +19,7 @@ login_manager.login_view = 'login'
 
 from models import *
 from forms import *
+
 
 @app.route('/')
 def index():
