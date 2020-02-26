@@ -1,0 +1,24 @@
+{% extends "main.html" %}
+{% block title %}Register{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="static/css/register.css" />
+{% endblock %}
+{% block content %}
+<h3>Sign Up</h3>
+<form method="POST" action="/register">
+    <div class="form-group">
+        <label>{{ form.display_name.label }}</label>
+        {{ form.display_name(class="form-control") }}
+    </div>
+    <div class="form-group">
+        <label>{{ form.username.label }}</label>
+        {{ form.username(class="form-control") }}
+    </div>
+    <div class="form-group">
+        <label>{{ form.email.label }}</label>
+        {{ form.email(class="form-control") }}
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
