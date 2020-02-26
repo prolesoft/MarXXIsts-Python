@@ -17,9 +17,9 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegistrationForm(csrf_enabled=False)
+    form = RegistrationForm()
     if form.validate_on_submit():
-        new_user = UserAccount(form.display_name.data, form.username.data, form.email.data)
+        new_user = UserAccount(form.display_name.data, form.username.data, form.email.data, form.password.data)
         db.session.add(new_user)
         db.session.commit()
         return redirect('/')
