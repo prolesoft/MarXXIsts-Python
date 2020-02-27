@@ -3,6 +3,7 @@ from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from models import UserAccount
 
+
 class RegistrationForm(FlaskForm):
     display_name = StringField('Display Name', validators=[DataRequired()])
     username = StringField('Username', validators=[DataRequired()])
@@ -12,7 +13,8 @@ class RegistrationForm(FlaskForm):
         'Confirm Password', validators=[DataRequired(), EqualTo('password')])
 
     def validate_display_name(self, display_name):
-        user = UserAccount.query.filter_by(display_name=display_name.data).first()
+        user = UserAccount.query.filter_by(
+            display_name=display_name.data).first()
         if user is not None:
             raise ValidationError('Please use a different display name.')
 
@@ -25,6 +27,7 @@ class RegistrationForm(FlaskForm):
         user = UserAccount.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
