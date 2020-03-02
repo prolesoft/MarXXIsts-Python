@@ -3,3 +3,8 @@
   margin-left: 10%;
   margin-right: 10%;
 }
+
+#navbar-wrapper {
+  width: 100%;
+  justify-content: space-between;
+}
