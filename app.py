@@ -1,5 +1,3 @@
-from forms import *
-from models import *
 from os import path
 from flask import (
     Flask,
@@ -26,6 +24,11 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
+
+
+# circular dependencies, these imports need to be down here
+from forms import *
+from models import *
 
 
 @app.route("/")
