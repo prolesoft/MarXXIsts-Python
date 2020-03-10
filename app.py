@@ -82,7 +82,6 @@ def logout():
 def upload():
     form = DocumentUploadForm()
     if form.validate_on_submit():
-        print("hi")
         f = form.document.data
         filename = secure_filename(f.filename)
         print(filename)
