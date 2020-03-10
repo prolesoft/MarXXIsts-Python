@@ -7,3 +7,4 @@ wtforms
 Flask-WTF
 Werkzeug
 flask-login
+pypandoc

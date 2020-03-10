@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from models import UserAccount
@@ -34,3 +35,7 @@ class RegistrationForm(FlaskForm):
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
+
+class DocumentUploadForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired()])
+    document = FileField(validators=[FileRequired(), FileAllowed(['md', 'docx', 'rtf', 'txt'], '.md, .docx, .rtf and .txt documents only')])

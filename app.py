@@ -1,4 +1,4 @@
-from os import path
+from os import path, remove, mkdir
 from flask import (
     Flask,
     escape,
@@ -12,8 +12,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf import FlaskForm
 from werkzeug.urls import url_parse
-from flask_login import current_user, login_user, LoginManager, logout_user
-
+from werkzeug.utils import secure_filename
+from flask_login import current_user, login_user, LoginManager, logout_user, login_required
+import pypandoc
 
 app = Flask(__name__)
 
@@ -71,6 +72,35 @@ def login():
 
 
 @app.route("/logout")
+@login_required
 def logout():
     logout_user()
     return redirect(url_for("index"))
+
+@app.route("/upload", methods=['GET', 'POST'])
+@login_required
+def upload():
+    form = DocumentUploadForm()
+    if form.validate_on_submit():
+        print("hi")
+        f = form.document.data
+        filename = secure_filename(f.filename)
+        print(filename)
+        works_directory = 'works'
+        converted_directory = path.join(works_directory, 'converted')
+        filepath = path.join(works_directory, filename)
+        if not path.exists(converted_directory):
+            if not path.exists(works_directory):
+                mkdir(works_directory)
+            mkdir(converted_directory)
+        
+        f.save(filepath)
+        converted_filepath = path.join('works', 'converted', f"{filename}.html")
+        pypandoc.convert_file(filepath, 'html', outputfile=converted_filepath)
+        remove(filepath)
+        doc = Document(current_user.id, form.title.data, converted_filepath)
+        db.session.add(doc)
+        db.session.commit()
+
+        return redirect(url_for('index'))
+    return render_template('upload.html', form=form)
