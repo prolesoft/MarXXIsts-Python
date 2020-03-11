@@ -1,0 +1,18 @@
+{% extends "main.html" %}
+{% block title %}Profile - {{ user.username }}{% endblock %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<h1>Profile</h1>
+<h2>{{ user.display_name }}</h2>
+<h3>Works</h3>
+{% for work in user.works %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{ work.title }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Published on {{ work.date_published.strftime("%m/%d/%Y at %H:%M") }}</h6>
+        <a href="/document/{{ work.id }}" class="card-link">View</a>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

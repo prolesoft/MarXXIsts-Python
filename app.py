@@ -1,4 +1,5 @@
 from os import path, remove, mkdir
+import codecs
 from flask import (
     Flask,
     escape,
@@ -84,7 +85,6 @@ def upload():
     if form.validate_on_submit():
         f = form.document.data
         filename = secure_filename(f.filename)
-        print(filename)
         works_directory = 'works'
         converted_directory = path.join(works_directory, 'converted')
         filepath = path.join(works_directory, filename)
@@ -103,3 +103,16 @@ def upload():
 
         return redirect(url_for('index'))
     return render_template('upload.html', form=form)
+
+@app.route("/profile")
+@login_required
+def profile():
+    return render_template('profile.html', user=current_user)
+
+@app.route("/document/<int:document_id>")
+def document(document_id):
+    doc = Document.query.get(document_id)
+    doc_file = codecs.open(doc.path, 'r', 'utf-8')
+    doc_text = doc_file.read()
+    doc_file.close()
+    return render_template('document.html', doc=doc, doc_contents=doc_text)
