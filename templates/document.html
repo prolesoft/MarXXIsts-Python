@@ -1,11 +1,14 @@
 {% extends "main.html" %}
 {% block title %}{{ doc.title }} - {{ doc.author.display_name }}{% endblock %}
 {% block head %}
+<link rel="stylesheet" type="text/css" href="/static/css/document.css" />
 {% endblock %}
 {% block content %}
 <div class="container">
     <h1>{{ doc.title }}</h1>
-    {{ doc_contents | safe }}
+    <div id="document-content">
+        {{ doc_contents | safe }}
+    </div>
 </div>
 {% endblock %}
 
