@@ -84,7 +84,7 @@ def upload():
     form = DocumentUploadForm()
     if form.validate_on_submit():
         f = form.document.data
-        filename = secure_filename(f.filename)
+        filename = secure_filename(f"{current_user.username}_" + f.filename)
         works_directory = 'works'
         converted_directory = path.join(works_directory, 'converted')
         filepath = path.join(works_directory, filename)
