@@ -2,8 +2,8 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
-from models import UserAccount
-
+from models import UserAccount, Document
+from flask_login import current_user
 
 class RegistrationForm(FlaskForm):
     display_name = StringField("Display Name", validators=[DataRequired()])
@@ -39,3 +39,8 @@ class LoginForm(FlaskForm):
 class DocumentUploadForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
     document = FileField(validators=[FileRequired(), FileAllowed(['md', 'docx', 'rtf', 'txt', 'odt'], '.md, .docx, .rtf, .txt, and .odt documents only')])
+
+    def validate_title(self, title):
+        doc = Document.query.filter_by(author_id = current_user.id, title = title.data).first()
+        if doc is not None:
+            raise ValidationError("You have already published a work with this name.")
