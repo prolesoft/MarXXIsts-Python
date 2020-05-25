@@ -6,6 +6,7 @@
 {% block content %}
 <div class="container">
     <h1>{{ doc.title }}</h1>
+    <h5>by {{ doc.author.display_name }}</h5>
     <div id="document-content">
         {{ doc_contents | safe }}
     </div>
