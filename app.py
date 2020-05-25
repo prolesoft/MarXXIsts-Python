@@ -1,4 +1,4 @@
-from os import path, remove, mkdir
+from os import path, remove, mkdir, environ
 import codecs
 from flask import (
     Flask,
@@ -21,6 +21,11 @@ app = Flask(__name__)
 
 if path.isfile("config.cfg"):
     app.config.from_pyfile("config.cfg")
+else:
+    secret_key = environ.get("SECRET_KEY")
+    database_uri = environ.get("SQLALCHEMY_DATABASE_URI")
+    app.config["SECRET_KEY"] = secret_key
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -92,7 +97,7 @@ def upload():
             if not path.exists(works_directory):
                 mkdir(works_directory)
             mkdir(converted_directory)
-        
+
         f.save(filepath)
         converted_filepath = path.join('works', 'converted', f"{filename}.html")
         pypandoc.convert_file(filepath, 'html', outputfile=converted_filepath)

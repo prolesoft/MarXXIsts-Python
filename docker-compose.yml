@@ -7,6 +7,7 @@ services:
     ports:
       - "5432:5432"
     environment:
+      POSTGRES_DB: marxxists
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: local
     networks:
@@ -18,7 +19,7 @@ services:
       - "5000:5000"
     command: flask run
     networks:
-      - entropic
+      - marxxists
     environment:
       SQLALCHEMY_DATABASE_URI: postgres://postgres:local@db:5432/marxxists
       FLASK_ENV: development
