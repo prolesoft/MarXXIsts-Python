@@ -38,4 +38,4 @@ class LoginForm(FlaskForm):
 
 class DocumentUploadForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
-    document = FileField(validators=[FileRequired(), FileAllowed(['md', 'docx', 'rtf', 'txt'], '.md, .docx, .rtf and .txt documents only')])
+    document = FileField(validators=[FileRequired(), FileAllowed(['md', 'docx', 'rtf', 'txt', 'odt'], '.md, .docx, .rtf, .txt, and .odt documents only')])
