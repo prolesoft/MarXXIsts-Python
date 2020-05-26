@@ -8,6 +8,8 @@ from flask import (
     redirect,
     flash,
     url_for,
+    jsonify,
+    abort,
 )
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -37,6 +39,13 @@ login_manager.login_view = "login"
 from forms import *
 from models import *
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html"), 404
+
+@app.errorhandler(401)
+def unauthorized(e):
+    return render_template("401.html"), 401
 
 @app.route("/")
 def index():
@@ -117,7 +126,25 @@ def profile():
 @app.route("/document/<int:document_id>")
 def document(document_id):
     doc = Document.query.get(document_id)
-    doc_file = codecs.open(doc.path, 'r', 'utf-8')
-    doc_text = doc_file.read()
-    doc_file.close()
-    return render_template('document.html', doc=doc, doc_contents=doc_text)
+    if doc is not None:
+        doc_file = codecs.open(doc.path, 'r', 'utf-8')
+        doc_text = doc_file.read()
+        doc_file.close()
+        return render_template('document.html', doc=doc, doc_contents=doc_text)
+    else:
+        return abort(404)
+
+
+@app.route("/document/<int:document_id>/delete", methods=['DELETE'])
+@login_required
+def delete_document(document_id):
+    doc = Document.query.get(document_id)
+    if doc is not None:
+        if doc.author_id != current_user.id:
+            return abort(401)
+        else:
+            db.session.delete(doc)
+            db.session.commit()
+            return redirect('/profile')
+    else:
+        return abort(404)
