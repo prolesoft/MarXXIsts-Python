@@ -8,3 +8,4 @@ Flask-WTF
 Werkzeug
 flask-login
 pypandoc
+email-validator
