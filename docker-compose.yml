@@ -17,7 +17,7 @@ services:
     build: .
     ports:
       - "5000:5000"
-    command: flask run
+    command: sh -c "flask db upgrade && flask run"
     networks:
       - marxxists
     environment:
