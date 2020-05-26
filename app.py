@@ -45,13 +45,16 @@ login_manager.login_view = "login"
 from forms import *
 from models import *
 
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html"), 404
 
+
 @app.errorhandler(401)
 def unauthorized(e):
     return render_template("401.html"), 401
+
 
 @app.route("/")
 def index():
@@ -155,6 +158,7 @@ def delete_document(document_id):
     else:
         return abort(404)
 
+
 @app.route("/author/<int:author_id>")
 def author(author_id):
     author = UserAccount.query.get(author_id)
@@ -165,6 +169,7 @@ def author(author_id):
             return render_template("author.html", author=author)
     else:
         return abort(404)
+
 
 @app.route("/browse")
 def browse():

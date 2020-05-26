@@ -24,6 +24,7 @@ class UserAccount(UserMixin, db.Model):
     def __repr__(self):
         return "<User %r>" % self.username
 
+
 class Document(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user_account.id'))
@@ -38,6 +39,7 @@ class Document(db.Model):
         self.title = title
         self.path = path
         self.date_published = datetime.utcnow()
+
 
 @login_manager.user_loader
 def load_user(id):

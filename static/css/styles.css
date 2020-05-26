@@ -1,10 +1,10 @@
 #content {
-  margin-top: 5%;
-  margin-left: 10%;
-  margin-right: 10%;
+    margin-top: 5%;
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
 #navbar-wrapper {
-  width: 100%;
-  justify-content: space-between;
+    width: 100%;
+    justify-content: space-between;
 }
