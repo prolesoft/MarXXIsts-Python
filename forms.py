@@ -50,5 +50,12 @@ class DocumentUploadForm(FlaskForm):
         doc = Document.query.filter_by(
             author_id=current_user.id, title=title.data).first()
         if doc is not None:
-            raise ValidationError(
-                "You have already published a work with this name.")
+            raise ValidationError("You have already published a work with this name.")
+
+
+class DocumentReuploadForm(FlaskForm):
+    document = FileField(
+        validators=[
+            FileRequired(),
+            FileAllowed(['md', 'docx', 'rtf', 'txt', 'odt'],
+                        '.md, .docx, .rtf, .txt, and .odt documents only')])

@@ -1,6 +1,7 @@
 {% extends "main.html" %}
 {% block title %}Profile - {{ user.username }}{% endblock %}
 {% block head %}
+<link rel="stylesheet" type="text/css" href="/static/css/profile.css" />
 {% endblock %}
 {% block content %}
 <h1>{{ user.display_name }}</h1>
@@ -11,10 +12,11 @@
     <div class="card-body">
         <h5 class="card-title">{{ work.title }}</h5>
         <h6 class="card-subtitle mb-2 text-muted">Published on {{ work.date_published.strftime("%m/%d/%Y at %H:%M") }}</h6>
-        <a href="/document/{{ work.id }}" class="card-link">
-            <button type="button" class="btn btn-primary">
-                View
-            </button>
+        <a class="btn btn-primary btn-link" href="/document/{{ work.id }}" role="button">
+            View
+        </a>
+        <a class="btn btn-info btn-link" href="/reupload/{{work.id}}" role="button">
+            Re-upload
         </a>
         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
             Delete

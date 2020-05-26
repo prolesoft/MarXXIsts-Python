@@ -123,7 +123,7 @@ def upload():
         converted_filepath = path.join(
                                         user_directory,
                                         document_directory_name,
-                                       f"0_{document_directory_name}.html")
+                                       f"00_{document_directory_name}.html") # Prefix indicates version
 
         pypandoc.convert_file(temp_save_path, 'html', outputfile=converted_filepath)
         remove(temp_save_path)
@@ -134,6 +134,36 @@ def upload():
 
         return redirect(url_for('index'))
     return render_template('upload.html', form=form)
+
+
+@app.route("/reupload/<int:document_id>", methods=['GET', 'POST'])
+@login_required
+def reupload(document_id):
+    form = DocumentReuploadForm()
+    document = Document.query.get(document_id)
+    if form.validate_on_submit():
+        uploaded_document_file = form.document.data
+        uploaded_document_file_name = secure_filename(uploaded_document_file.filename)
+
+        temp_save_path = path.join('works', 'temp', uploaded_document_file_name)
+        uploaded_document_file.save(temp_save_path)
+
+        user_directory = path.join('works', current_user.username)
+        document_directory_name = secure_filename(document.title)
+        document_directory_path = path.join(user_directory, document_directory_name)
+
+        version_number = int((sorted(listdir(document.path))[::-1][:1][0]).split("_")[0])
+        version_string = f"0{version_number+1}" if version_number < 9 else f"{version_number+1}"
+        converted_filepath = path.join(
+                                        document_directory_path,
+                                       f"{version_string}_{document_directory_name}.html") # Prefix indicates version
+
+        pypandoc.convert_file(temp_save_path, 'html', outputfile=converted_filepath)
+        remove(temp_save_path)
+
+        return redirect(f"/document/{document.id}")
+    return render_template('reupload.html', form=form, doc=document)
+
 
 
 @app.route("/profile")

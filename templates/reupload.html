@@ -1,0 +1,19 @@
+{% extends "main.html" %}
+{% block title %}Update a Document{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/upload.css" />
+{% endblock %}
+{% block content %}
+<h3>Upload a new version of {{doc.title}}</h3>
+<form method="POST"  enctype="multipart/form-data" action="/reupload/{{doc.id}}">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        <label>{{ form.document.label }}</label>
+        {{ form.document(class="form-control") }}
+        {% for error in form.document.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
