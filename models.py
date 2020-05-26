@@ -1,3 +1,4 @@
+from os import listdir, path
 from app import db, login_manager
 from datetime import datetime
 from flask_login import UserMixin
@@ -39,6 +40,17 @@ class Document(db.Model):
         self.title = title
         self.path = path
         self.date_published = datetime.utcnow()
+    
+    def latest(self):
+        """
+        Returns path to latest version
+
+        [::-1] reverses the sorted list of versions
+        [:1] removes all elements but the first
+        [0] extracts the first element
+        """
+        return path.join(self.path, sorted(listdir(self.path))[::-1][:1][0])
+
 
 
 @login_manager.user_loader

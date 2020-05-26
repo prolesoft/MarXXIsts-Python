@@ -1,4 +1,4 @@
-from os import path, remove, environ
+from os import path, remove, environ, mkdir
 import codecs
 from flask import (
     Flask,
@@ -8,7 +8,6 @@ from flask import (
     redirect,
     flash,
     url_for,
-    jsonify,
     abort,
 )
 from flask_sqlalchemy import SQLAlchemy
@@ -45,6 +44,7 @@ login_manager.login_view = "login"
 from forms import *
 from models import *
 
+# Error Handlers
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -55,6 +55,7 @@ def page_not_found(e):
 def unauthorized(e):
     return render_template("401.html"), 401
 
+# Routes
 
 @app.route("/")
 def index():
@@ -73,6 +74,8 @@ def register():
         )
         db.session.add(new_user)
         db.session.commit()
+        login_user(new_user)
+        mkdir(path.join('works', new_user.username)) # Create a works directory for the new user
         return redirect(url_for("index"))
     return render_template("register.html", form=form)
 
@@ -107,18 +110,25 @@ def logout():
 def upload():
     form = DocumentUploadForm()
     if form.validate_on_submit():
-        f = form.document.data
-        filename = secure_filename(f"{current_user.username}_" + f.filename)
-        works_directory = 'works'
-        converted_directory = path.join(works_directory, 'converted')
-        filepath = path.join(works_directory, filename)
-        f.save(filepath)
-        converted_filepath = path.join('works',
-                                       'converted',
-                                       f"{filename}.html")
-        pypandoc.convert_file(filepath, 'html', outputfile=converted_filepath)
-        remove(filepath)
-        doc = Document(current_user.id, form.title.data, converted_filepath)
+        uploaded_document_file = form.document.data
+        uploaded_document_file_name = secure_filename(uploaded_document_file.filename)
+
+        temp_save_path = path.join('works', 'temp', uploaded_document_file_name)
+        uploaded_document_file.save(temp_save_path)
+
+        user_directory = path.join('works', current_user.username)
+        document_directory_name = secure_filename(form.title.data)
+        document_directory_path = path.join(user_directory, document_directory_name)
+        mkdir(document_directory_path) # Create directory to store all versions of converted document
+        converted_filepath = path.join(
+                                        user_directory,
+                                        document_directory_name,
+                                       f"0_{document_directory_name}.html")
+
+        pypandoc.convert_file(temp_save_path, 'html', outputfile=converted_filepath)
+        remove(temp_save_path)
+
+        doc = Document(current_user.id, form.title.data, document_directory_path)
         db.session.add(doc)
         db.session.commit()
 
@@ -136,7 +146,7 @@ def profile():
 def document(document_id):
     doc = Document.query.get(document_id)
     if doc is not None:
-        doc_file = codecs.open(doc.path, 'r', 'utf-8')
+        doc_file = codecs.open(doc.latest(), 'r', 'utf-8')
         doc_text = doc_file.read()
         doc_file.close()
         return render_template('document.html', doc=doc, doc_contents=doc_text)
