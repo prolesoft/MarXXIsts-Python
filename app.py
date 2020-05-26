@@ -165,3 +165,8 @@ def author(author_id):
             return render_template("author.html", author=author)
     else:
         return abort(404)
+
+@app.route("/browse")
+def browse():
+    published_works = Document.query.all()
+    return render_template("browse.html", works=published_works)

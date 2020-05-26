@@ -1,0 +1,26 @@
+{% extends "main.html" %}
+{% block title %}Browse{% endblock %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<h1>Browse Published Works</h1>
+{% if works|length %}
+{% for work in works %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{ work.title }}</h5>
+        <h6><a href="/author/{{work.author.id}}">{{work.author.display_name}}</a></h6>
+        <h6 class="card-subtitle mb-2 text-muted">Published on {{ work.date_published.strftime("%m/%d/%Y at %H:%M") }}</h6>
+        <a href="/document/{{ work.id }}" class="card-link">
+            <button type="button" class="btn btn-primary">
+                View
+            </button>
+        </a>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<p>No works have been published</p>
+{% endif %}
+{% endblock %}
+
