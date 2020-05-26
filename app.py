@@ -1,4 +1,4 @@
-from os import path, remove, mkdir, environ
+from os import path, remove, environ
 import codecs
 from flask import (
     Flask,
@@ -100,11 +100,6 @@ def upload():
         works_directory = 'works'
         converted_directory = path.join(works_directory, 'converted')
         filepath = path.join(works_directory, filename)
-        if not path.exists(converted_directory):
-            if not path.exists(works_directory):
-                mkdir(works_directory)
-            mkdir(converted_directory)
-
         f.save(filepath)
         converted_filepath = path.join('works',
                                        'converted',
