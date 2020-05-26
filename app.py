@@ -16,7 +16,13 @@ from flask_migrate import Migrate
 from flask_wtf import FlaskForm
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
-from flask_login import current_user, login_user, LoginManager, logout_user, login_required
+from flask_login import (
+    current_user,
+    login_user,
+    LoginManager,
+    logout_user,
+    login_required
+)
 import pypandoc
 
 app = Flask(__name__)
@@ -92,6 +98,7 @@ def logout():
     logout_user()
     return redirect(url_for("index"))
 
+
 @app.route("/upload", methods=['GET', 'POST'])
 @login_required
 def upload():
@@ -108,7 +115,9 @@ def upload():
             mkdir(converted_directory)
 
         f.save(filepath)
-        converted_filepath = path.join('works', 'converted', f"{filename}.html")
+        converted_filepath = path.join('works',
+                                       'converted',
+                                       f"{filename}.html")
         pypandoc.convert_file(filepath, 'html', outputfile=converted_filepath)
         remove(filepath)
         doc = Document(current_user.id, form.title.data, converted_filepath)
@@ -118,10 +127,12 @@ def upload():
         return redirect(url_for('index'))
     return render_template('upload.html', form=form)
 
+
 @app.route("/profile")
 @login_required
 def profile():
     return render_template('profile.html', user=current_user)
+
 
 @app.route("/document/<int:document_id>")
 def document(document_id):
