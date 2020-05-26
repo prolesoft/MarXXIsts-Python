@@ -148,3 +148,14 @@ def delete_document(document_id):
             return redirect('/profile')
     else:
         return abort(404)
+
+@app.route("/author/<int:author_id>")
+def author(author_id):
+    author = UserAccount.query.get(author_id)
+    if author is not None:
+        if author.id == current_user.id:
+            return redirect("/profile")
+        else:
+            return render_template("author.html", author=author)
+    else:
+        return abort(404)

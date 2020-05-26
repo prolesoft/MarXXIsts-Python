@@ -5,6 +5,7 @@
 {% block content %}
 <h1>{{ user.display_name }}</h1>
 <h3>Published Works</h3>
+{% if user.works|length %}
 {% for work in user.works %}
 <div class="card">
     <div class="card-body">
@@ -46,4 +47,7 @@
     </div>
 </div>
 {% endfor %}
+{% else %}
+<p>You have not published any works</p>
+{% endif %}
 {% endblock %}

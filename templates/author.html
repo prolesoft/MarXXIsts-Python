@@ -1,0 +1,25 @@
+{% extends "main.html" %}
+{% block title %}Profile - {{ author.username }}{% endblock %}
+{% block head %}
+{% endblock %}
+{% block content %}
+<h1>{{ author.display_name }}</h1>
+<h3>Published Works</h3>
+{% if author.works|length %}
+{% for work in author.works %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{ work.title }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Published on {{ work.date_published.strftime("%m/%d/%Y at %H:%M") }}</h6>
+        <a href="/document/{{ work.id }}" class="card-link">
+            <button type="button" class="btn btn-primary">
+                View
+            </button>
+        </a>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<p>This user has not published any works</p>
+{% endif %}
+{% endblock %}
