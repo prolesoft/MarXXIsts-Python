@@ -33,6 +33,7 @@ class Document(db.Model):
     title = db.Column(db.String, unique=False, nullable=False)
     date_published = db.Column(db.DateTime, unique=False, nullable=False)
     path = db.Column(db.String, unique=True, nullable=False)
+    versions = db.relationship("Version", back_populates="document")
 
     def __init__(self, author_id, title, path):
         self.author_id = author_id
@@ -49,9 +50,20 @@ class Document(db.Model):
         [:1] removes all elements but the first
         [0] extracts the first element
         """
-        return path.join(self.path, sorted(listdir(self.path))[::-1][:1][0])
+        return sorted(self.versions, key=lambda v: v.upload_date)[::-1][:1][0]
 
+class Version(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    document_id = db.Column(db.Integer, db.ForeignKey('document.id'), nullable=False)
+    document = db.relationship("Document", back_populates="versions")
+    upload_date = db.Column(db.DateTime, unique=False, nullable=False)
+    path = db.Column(db.String, unique=True, nullable=False)
 
+    def __init__(self, document_id, path, upload_date=datetime.utcnow()):
+        self.document_id = document_id
+        self.document = Document.query.get(document_id)
+        self.upload_date = upload_date
+        self.path = path
 
 @login_manager.user_loader
 def load_user(id):

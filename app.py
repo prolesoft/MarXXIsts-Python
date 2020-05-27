@@ -1,4 +1,5 @@
 from os import path, remove, environ, mkdir
+from shutil import rmtree
 import codecs
 from flask import (
     Flask,
@@ -54,6 +55,10 @@ def page_not_found(e):
 @app.errorhandler(401)
 def unauthorized(e):
     return render_template("401.html"), 401
+
+@app.errorhandler(500)
+def internal_server(e):
+    return render_template("500.html"), 500
 
 # Routes
 
@@ -119,20 +124,26 @@ def upload():
         user_directory = path.join('works', current_user.username)
         document_directory_name = secure_filename(form.title.data)
         document_directory_path = path.join(user_directory, document_directory_name)
+
         mkdir(document_directory_path) # Create directory to store all versions of converted document
-        converted_filepath = path.join(
-                                        user_directory,
-                                        document_directory_name,
-                                       f"00_{document_directory_name}.html") # Prefix indicates version
-
-        pypandoc.convert_file(temp_save_path, 'html', outputfile=converted_filepath)
-        remove(temp_save_path)
-
         doc = Document(current_user.id, form.title.data, document_directory_path)
         db.session.add(doc)
         db.session.commit()
 
-        return redirect(url_for('index'))
+        version_string = doc.date_published.strftime("%y%m%d%H%M%S")
+        converted_filepath = path.join(
+                                        user_directory,
+                                        document_directory_name,
+                                       f"{version_string}_{document_directory_name}.html") # Prefix indicates version
+
+        pypandoc.convert_file(temp_save_path, 'html', outputfile=converted_filepath)
+        remove(temp_save_path)
+
+        original_version = Version(doc.id, converted_filepath, doc.date_published)
+        db.session.add(original_version)
+        db.session.commit()
+
+        return redirect(f"/document/{doc.id}")
     return render_template('upload.html', form=form)
 
 
@@ -151,16 +162,17 @@ def reupload(document_id):
         user_directory = path.join('works', current_user.username)
         document_directory_name = secure_filename(document.title)
         document_directory_path = path.join(user_directory, document_directory_name)
-
-        version_number = int((sorted(listdir(document.path))[::-1][:1][0]).split("_")[0])
-        version_string = f"0{version_number+1}" if version_number < 9 else f"{version_number+1}"
+        version_time = datetime.utcnow()
+        version_string = version_time.strftime("%y%m%d%H%M%S")
         converted_filepath = path.join(
                                         document_directory_path,
                                        f"{version_string}_{document_directory_name}.html") # Prefix indicates version
-
         pypandoc.convert_file(temp_save_path, 'html', outputfile=converted_filepath)
         remove(temp_save_path)
 
+        new_version = Version(document_id, converted_filepath, version_time)
+        db.session.add(new_version)
+        db.session.commit()
         return redirect(f"/document/{document.id}")
     return render_template('reupload.html', form=form, doc=document)
 
@@ -176,7 +188,7 @@ def profile():
 def document(document_id):
     doc = Document.query.get(document_id)
     if doc is not None:
-        doc_file = codecs.open(doc.latest(), 'r', 'utf-8')
+        doc_file = codecs.open(doc.latest().path, 'r', 'utf-8')
         doc_text = doc_file.read()
         doc_file.close()
         return render_template('document.html', doc=doc, doc_contents=doc_text)
@@ -192,6 +204,7 @@ def delete_document(document_id):
         if doc.author_id != current_user.id:
             return abort(401)
         else:
+            rmtree(doc.path)
             db.session.delete(doc)
             db.session.commit()
             return redirect('/profile')

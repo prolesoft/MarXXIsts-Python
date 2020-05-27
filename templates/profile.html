@@ -12,6 +12,7 @@
     <div class="card-body">
         <h5 class="card-title">{{ work.title }}</h5>
         <h6 class="card-subtitle mb-2 text-muted">Published on {{ work.date_published.strftime("%m/%d/%Y at %H:%M") }}</h6>
+        <h6 class="card-subtitle mb-2 text-muted">Latest version published on {{ work.latest().upload_date.strftime("%m/%d/%Y at %H:%M") }}</h6>
         <a class="btn btn-primary btn-link" href="/document/{{ work.id }}" role="button">
             View
         </a>
