@@ -1,6 +1,7 @@
 {% extends "main.html" %}
 {% block title %}Browse{% endblock %}
 {% block head %}
+<link rel="stylesheet" type="text/css" href="/static/css/profile.css" />
 {% endblock %}
 {% block content %}
 <h1>Browse Published Works</h1>
@@ -10,12 +11,46 @@
     <div class="card-body">
         <h5 class="card-title">{{ work.title }}</h5>
         <h6><a href="/author/{{work.author.id}}">{{work.author.display_name}}</a></h6>
-        <h6 class="card-subtitle mb-2 text-muted">Published on {{ work.date_published.strftime("%m/%d/%Y at %H:%M") }}</h6>
-        <a href="/document/{{ work.id }}" class="card-link">
-            <button type="button" class="btn btn-primary">
-                View
-            </button>
+        <h6 class="card-subtitle mb-2 text-muted">Published on {{ work.date_published.strftime("%m/%d/%Y at %H:%M") }}
+        </h6>
+        <h6 class="card-subtitle mb-2 text-muted">Latest version published on
+            {{ work.latest().upload_date.strftime("%m/%d/%Y at %H:%M") }}</h6>
+        <a class="btn btn-primary btn-link" href="/document/{{ work.id }}/{{ work.latest().id }}" role="button">
+            View
         </a>
+        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#historyModal{{work.id}}">
+            History
+        </button>
+        <div class="modal fade" id="historyModal{{work.id}}" tabindex="-1" role="dialog"
+            aria-labelledby="historyModal{{work.id}}Label" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="historyModal{{work.id}}Label">Version History</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% for version in work.versions %}
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>Published on {{ work.latest().upload_date.strftime("%m/%d/%Y at %H:%M") }}</h6>
+                                <a class="btn btn-primary btn-link" href="/document/{{ work.id }}/{{ version.id }}"
+                                    role="button">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
 {% endfor %}

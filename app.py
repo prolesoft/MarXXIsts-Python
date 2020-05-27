@@ -143,7 +143,7 @@ def upload():
         db.session.add(original_version)
         db.session.commit()
 
-        return redirect(f"/document/{doc.id}")
+        return redirect(f"/document/{doc.id}/{original_version.id}")
     return render_template('upload.html', form=form)
 
 
@@ -173,7 +173,7 @@ def reupload(document_id):
         new_version = Version(document_id, converted_filepath, version_time)
         db.session.add(new_version)
         db.session.commit()
-        return redirect(f"/document/{document.id}")
+        return redirect(f"/document/{document.id}/{new_version.id}")
     return render_template('reupload.html', form=form, doc=document)
 
 
@@ -184,11 +184,12 @@ def profile():
     return render_template('profile.html', user=current_user)
 
 
-@app.route("/document/<int:document_id>")
-def document(document_id):
+@app.route("/document/<int:document_id>/<int:version_id>")
+def document(document_id, version_id):
     doc = Document.query.get(document_id)
-    if doc is not None:
-        doc_file = codecs.open(doc.latest().path, 'r', 'utf-8')
+    version = Version.query.get(version_id)
+    if doc is not None and version is not None:
+        doc_file = codecs.open(version.path, 'r', 'utf-8')
         doc_text = doc_file.read()
         doc_file.close()
         return render_template('document.html', doc=doc, doc_contents=doc_text)

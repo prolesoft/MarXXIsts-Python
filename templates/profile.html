@@ -11,42 +11,80 @@
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">{{ work.title }}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">Published on {{ work.date_published.strftime("%m/%d/%Y at %H:%M") }}</h6>
-        <h6 class="card-subtitle mb-2 text-muted">Latest version published on {{ work.latest().upload_date.strftime("%m/%d/%Y at %H:%M") }}</h6>
-        <a class="btn btn-primary btn-link" href="/document/{{ work.id }}" role="button">
+        <h6 class="card-subtitle mb-2 text-muted">Published on {{ work.date_published.strftime("%m/%d/%Y at %H:%M") }}
+        </h6>
+        <h6 class="card-subtitle mb-2 text-muted">Latest version published on
+            {{ work.latest().upload_date.strftime("%m/%d/%Y at %H:%M") }}</h6>
+        <a class="btn btn-primary btn-link" href="/document/{{ work.id }}/{{ work.latest().id }}" role="button">
             View
         </a>
+        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#historyModal{{work.id}}">
+            History
+        </button>
         <a class="btn btn-info btn-link" href="/reupload/{{work.id}}" role="button">
             Re-upload
         </a>
-        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal{{work.id}}">
             Delete
         </button>
 
-        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal fade" id="deleteModal{{work.id}}" tabindex="-1" role="dialog" aria-labelledby="deleteModal{{work.id}}Label"
+            aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Delete Work</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Delete this work and all previous versions?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button id="delete-document" type="button" class="btn btn-danger">Delete</button>
-                    <script>
-                        document.getElementById('delete-document').onclick = function deleteDocument () {
-                            fetch("/document/" + "{{work.id}}" + "/delete", { method: 'DELETE' }).then((v) => location.reload())
-                          }
-                    </script>
-                </div>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModal{{work.id}}Label">Delete Work</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Delete this work and all previous versions?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="delete-document" type="button" class="btn btn-danger">Delete</button>
+                        <script>
+                            document.getElementById('delete-document').onclick = function deleteDocument() {
+                                fetch("/document/" + "{{work.id}}" + "/delete", { method: 'DELETE' }).then((v) => location.reload())
+                            }
+                        </script>
+                    </div>
                 </div>
             </div>
+
+
+
+        </div>
+        <div class="modal fade" id="historyModal{{work.id}}" tabindex="-1" role="dialog" aria-labelledby="historyModal{{work.id}}Label"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="historyModal{{work.id}}Label">Version History</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% for version in work.versions %}
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>Published on {{ work.latest().upload_date.strftime("%m/%d/%Y at %H:%M") }}</h6>
+                                <a class="btn btn-primary btn-link" href="/document/{{ work.id }}/{{ version.id }}"
+                                    role="button">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
+        </div>
     </div>
 </div>
 {% endfor %}
