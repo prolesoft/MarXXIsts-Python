@@ -16,9 +16,11 @@ To build this project:
 1. `pip install -r requirements.txt`
 1. `flask db upgrade`
 1. `flask run`
-1. Check out <http://localhost:5000> in your browser.
+1. Check out <http://localhost:5000> in your browser
 
 ### With Docker
 
-1. `docker-compose up --build`
-1. Check out <http://localhost:5000> in your browser.
+1. `make run` to run
+1. Check out <http://localhost:5000> in your browser
+1. `make stop` to stop
+1. `make build` to build an image
