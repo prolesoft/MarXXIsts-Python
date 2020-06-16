@@ -1,6 +1,8 @@
 # MarXXIsts
 
-Python rewrite of [MarXXIsts](https://github.com/prolesoft/MarXXIsts)
+MarXXIsts is an online platform for 21st century Marxist thinkers and activists to publish, study, analyse and critique each 
+other's theoretical works. In other words, a slightly more robust [marxists.org](https://www.marxists.org) for the work of
+Marxists who are still alive and are actively engaging with criticism and analysis of their own work.
 
 ## Building
 
